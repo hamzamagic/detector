@@ -1,9 +1,15 @@
 import requests
-from virusshare import VirusShare
+import volatility3.framework.plugins.windows.pslist
+# from requests.api import request
+import volatility3.framework as vf
+# from volatility3.framework import exceptions, renderers, interfaces
+# from volatility3.framework.configuration import requirements
+# from volatility3.framework.renderers import format_hints
+# from volatility3.plugins import windows
+# from virusshare import VirusShare
 
-#v = VirusShare('24610375250fa23e5dd6c6d72cc4b405c7f6384cd3cf89be0960a94929b3099e')
-#a = v.info('75a2d61962f981834738df1e9b0a96f0')
-#print(a['data'])
+# API key: '24610375250fa23e5dd6c6d72cc4b405c7f6384cd3cf89be0960a94929b3099e'
+# example of MD5: '75a2d61962f981834738df1e9b0a96f0'
 
 API_KEY = 'your_api_key_here'
 MD5_HASH = 'your_md5_hash_here'
@@ -28,4 +34,25 @@ def check_md5(api_key, md5_hash):
     else:
         print(f"An error occurred: {response.status_code}")
 
-check_md5('24610375250fa23e5dd6c6d72cc4b405c7f6384cd3cf89be0960a94929b3099e', '75a2d61962f981834738df1e9b0a96f0')
+# The two functions below need to be double-checked
+def get_pslist_data(self):
+    # Instantiate the PsList plugin
+    pslist_plugin = vf.plugins.windows.pslist.PsList(self._config)
+
+    # Call the calculate method of the PsList plugin
+    pslist_data = pslist_plugin.calculate()
+
+    # Return the data from the PsList plugin
+    return pslist_data
+
+def render_text(self, outfd, data):
+    pslist_data = self.get_pslist_data()
+
+    # Process the pslist_data
+    for task in pslist_data:
+        process_name = task.ImageFileName
+        process_id = task.UniqueProcessId
+        outfd.write(f"Process Name: {process_name}, Process ID: {process_id}\n")
+
+
+check_md5(API_KEY, MD5_HASH)
